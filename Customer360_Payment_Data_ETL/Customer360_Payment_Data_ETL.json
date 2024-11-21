@@ -1,0 +1,43 @@
+{
+  "name" : "Customer360_Payment_Data_ETL",
+  "jobMode" : "SCRIPT",
+  "description" : "",
+  "role" : "arn:aws:iam::894811220469:role/customer360_glue_role",
+  "executionProperty" : {
+    "maxConcurrentRuns" : 1
+  },
+  "command" : {
+    "name" : "glueetl",
+    "scriptLocation" : "s3://aws-glue-assets-894811220469-us-east-1/scripts/Customer360_Payment_Data_ETL.py",
+    "pythonVersion" : "3"
+  },
+  "defaultArguments" : {
+    "--enable-metrics" : "true",
+    "--spark-event-logs-path" : "s3://aws-glue-assets-894811220469-us-east-1/sparkHistoryLogs/",
+    "--enable-job-insights" : "true",
+    "--enable-observability-metrics" : "true",
+    "--enable-glue-datacatalog" : "true",
+    "--enable-continuous-cloudwatch-log" : "true",
+    "--job-bookmark-option" : "job-bookmark-enable",
+    "--SECRET_NAME" : "customer360_redshift_secrets",
+    "--job-language" : "python",
+    "--TempDir" : "s3://aws-glue-assets-894811220469-us-east-1/temporary/"
+  },
+  "connections" : {
+    "connections" : [ "Customer360-Glue-Redshift-Connection" ]
+  },
+  "maxRetries" : 0,
+  "allocatedCapacity" : 2,
+  "timeout" : 2880,
+  "maxCapacity" : 2.0,
+  "glueVersion" : "4.0",
+  "numberOfWorkers" : 2,
+  "workerType" : "G.1X",
+  "executionClass" : "STANDARD",
+  "sourceControlDetails" : {
+    "provider" : "GITHUB",
+    "repository" : "Customer_360_Degree_View",
+    "branch" : "dev",
+    "folder" : "Customer360_Payment_Data_ETL"
+  }
+}
