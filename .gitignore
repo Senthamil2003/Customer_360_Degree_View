@@ -1,2 +1,4 @@
 .env
 customer360.pem
+
+run_customer360_etl.sh
