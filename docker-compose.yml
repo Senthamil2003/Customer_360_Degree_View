@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  glue_pyspark:
+    image: amazon/aws-glue-libs:glue_libs_4.0.0_image_01
+    container_name: glue_pyspark
+    ports:
+      - "4040:4040"  # Map Glue Spark UI port
+      - "18080:18080"  # Map another Glue-related service port
+    environment:
+      - AWS_PROFILE=default
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      - DISABLE_SSL=true
+    volumes:
+      - ${HOME}/.aws:/home/glue_user/.aws:ro  # Mount AWS credentials
+      - ${PWD}:/home/glue_user/workspace  # Mount workspace
+    stdin_open: true  # Keep stdin open for interactive use
+    tty: true         # Allocate a pseudo-TTY for interactive use
+    networks:
+      - default_network
+    restart: always   # Ensure the container restarts if it crashes
+
+networks:
+  default_network:
+    driver: bridge
