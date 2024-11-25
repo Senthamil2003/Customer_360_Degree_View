@@ -1,0 +1,47 @@
+{
+  "name" : "Customer360_payment_method_etl_dynamicFrame",
+  "jobMode" : "SCRIPT",
+  "description" : "",
+  "role" : "arn:aws:iam::894811220469:role/customer360_glue_role",
+  "executionProperty" : {
+    "maxConcurrentRuns" : 1
+  },
+  "command" : {
+    "name" : "glueetl",
+    "scriptLocation" : "s3://aws-glue-assets-894811220469-us-east-1/scripts/Customer360_payment_method_etl_dynamicFrame.py",
+    "pythonVersion" : "3"
+  },
+  "defaultArguments" : {
+    "--enable-glue-datacatalog" : "true",
+    "--job-bookmark-option" : "job-bookmark-disable",
+    "--redshift_tmp_dir" : "s3://aws-glue-assets-894811220469-us-east-1/temporary/",
+    "--TempDir" : "s3://aws-glue-assets-894811220469-us-east-1/temporary/",
+    "--secret_name" : "customer360_redshift_secrets",
+    "--enable-metrics" : "true",
+    "--enable-spark-ui" : "true",
+    "--spark-event-logs-path" : "s3://aws-glue-assets-894811220469-us-east-1/sparkHistoryLogs/",
+    "--enable-job-insights" : "true",
+    "--enable-observability-metrics" : "true",
+    "--enable-continuous-cloudwatch-log" : "true",
+    "--region_name" : "us-east-1",
+    "--s3_source_path" : "s3://customer360-v1-s3bucket/raw/year=2024/",
+    "--job-language" : "python"
+  },
+  "connections" : {
+    "connections" : [ "Customer360-Glue-Redshift-Connection" ]
+  },
+  "maxRetries" : 0,
+  "allocatedCapacity" : 2,
+  "timeout" : 2880,
+  "maxCapacity" : 2.0,
+  "glueVersion" : "4.0",
+  "numberOfWorkers" : 2,
+  "workerType" : "G.1X",
+  "executionClass" : "STANDARD",
+  "sourceControlDetails" : {
+    "provider" : "GITHUB",
+    "repository" : "Customer_360_Degree_View",
+    "branch" : "dev",
+    "folder" : "Customer360_payment_method_etl_dynamicFrame"
+  }
+}
