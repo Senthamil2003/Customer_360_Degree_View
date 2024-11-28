@@ -7,6 +7,7 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
+import os
 import json
 import concurrent.futures
 from awsglue.dynamicframe import DynamicFrame
@@ -20,11 +21,32 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Parse job parameters
-args = getResolvedOptions(
-    sys.argv, 
-    ['JOB_NAME', 's3_source_path', 'redshift_tmp_dir', 'secret_name', 'region_name']
-)
+
+
+# Check if the script is running locally by verifying the presence of the JSON config file
+CONFIG_FILE_PATH = 'Customer360_payment_method_etl_dynamicFrame.json'
+if os.path.exists(CONFIG_FILE_PATH):
+    logger.info(f"Running locally. Loading configuration from {CONFIG_FILE_PATH}...")
+
+    # Load parameters from JSON configuration file
+    with open(CONFIG_FILE_PATH, 'r') as config_file:
+        config = json.load(config_file)
+
+    # Extract arguments from JSON
+    args = {
+        'JOB_NAME': config['name'],
+        's3_source_path': config['defaultArguments']['--s3_source_path'],
+        'redshift_tmp_dir': config['defaultArguments']['--redshift_tmp_dir'],
+        'secret_name': config['defaultArguments']['--secret_name'],
+        'region_name': config['defaultArguments']['--region_name']
+    }
+else:
+    logger.info("Running in AWS Glue environment. Parsing command line arguments...")
+    # Parse command line job parameters (AWS Glue environment)
+    args = getResolvedOptions(
+        sys.argv,
+        ['JOB_NAME', 's3_source_path', 'redshift_tmp_dir', 'secret_name', 'region_name']
+    )
 
 # Initialize Spark, GlueContext, and Job
 sc = SparkContext()
@@ -78,7 +100,8 @@ def get_secret():
 
 SECRET_DATA = get_secret()
 redshift_connection_options = {
-    "url": SECRET_DATA["url"],
+    "url": "jdbc:redshift://localhost:5439/customer360_db_redshift",
+    # "url": SECRET_DATA["url"],
     "dbtable": PAYMENT_METHOD_TABLE,
     "user": SECRET_DATA["user"],
     "password": SECRET_DATA["password"],
